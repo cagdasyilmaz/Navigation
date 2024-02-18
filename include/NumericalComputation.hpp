@@ -26,7 +26,6 @@
 #pragma once
 
 #include <eigen3/Eigen/Dense>
-#include <iostream>
 
 /**
  * \brief  p_b/n^n of the craft relative to the NED coordinate system is calculated by numerical integration
