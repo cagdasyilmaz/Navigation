@@ -1,13 +1,14 @@
 #include "Angle.hpp"
 #include "Transformation.hpp"
 #include "NumericalComputation.hpp"
+#include "Earth_Surface_and_Gravity_Models.hpp"
 
 #include <iostream>
 #include <chrono>
 
 int main()
 {
-    auto begin = std::chrono::steady_clock::now();
+    /*auto begin = std::chrono::steady_clock::now();
 
     auto euler = Angle::Degree(Eigen::Vector3d{0, 0, 5});
 
@@ -32,7 +33,14 @@ int main()
 
     std::chrono::duration<double> last =
             std::chrono::steady_clock::now() - begin;
-    std::cout << "time: " << last.count() << '\n';
+    std::cout << "time: " << last.count() << '\n';*/
+
+    auto lat_long = Angle_Lat_Long::Degree({45, 30});
+    double height = 1000;
+
+    auto r_eb_e = NED_to_ECEF_Position(lat_long, height);
+
+    std::cout << "r_eb_e:\n" << r_eb_e << std::endl;
 
     return 0;
 }

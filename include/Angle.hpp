@@ -89,7 +89,7 @@ public:
     }
 
     /**
-    * \returns angle Euler angles in degree form
+    * \returns angle Euler angles in gradian form
     */
     [[nodiscard]] Eigen::Vector3d gradian() const
     {
@@ -101,4 +101,76 @@ public:
 private:
     [[maybe_unused]] Angle(Eigen::Vector3d angles) : angles_{std::move(angles)} {}
 };
+
+
+/**
+ * \brief This class is a factory implementation of the latitude and longitude angles,
+ * the angles defined in the order of latitude and longitude, they will be transformed to radian forms.
+ * Default constructor will not be called directly
+ */
+class Angle_Lat_Long
+{
+public:
+    Eigen::Vector2d angles_;
+
+    /**
+    * \param angle Latitude and Longitude angles in radian from
+    * \returns Angle_Lat_Long in radian forms
+    */
+    static Angle_Lat_Long Radian(const Eigen::Vector2d& angles = Eigen::Vector2d{0, 0})
+    {
+        return angles;
+    }
+
+    /**
+    * \param angle Latitude and Longitude angles in radian from
+    * \returns Angle_Lat_Long in radian forms
+    */
+    static Angle_Lat_Long Degree(const Eigen::Vector2d& angles = Eigen::Vector2d{0, 0})
+    {
+        return Eigen::Vector2d {static_cast<double>(M_PI * angles[0] / 180.f),
+                                static_cast<double>(M_PI * angles[1] / 180.f) };
+    }
+
+    /**
+    * \param angle Latitude and Longitude angles in radian from
+    * \returns Angle_Lat_Long in radian forms
+    */
+    static Angle_Lat_Long Gradian(Eigen::Vector2d angles = Eigen::Vector2d{0, 0})
+    {
+        return Eigen::Vector2d {static_cast<double>(M_PI * angles[0] / 200.f),
+                                static_cast<double>(M_PI * angles[1] / 200.f)};
+    }
+
+    /**
+    * \returns angle Latitude and Longitude angles in gradian form
+    */
+    [[nodiscard]] Eigen::Vector2d radian() const
+    {
+        return Eigen::Vector2d{angles_[0], angles_[1]};
+    }
+
+    /**
+    * \returns angle Latitude and Longitude angles in degree form
+    */
+    [[nodiscard]] Eigen::Vector2d degree() const
+    {
+        return Eigen::Vector2d{static_cast<double>(angles_[0] * 180.f / M_PI),
+                               static_cast<double>(angles_[1] * 180.f / M_PI)};
+    }
+
+    /**
+    * \returns angle Latitude and Longitude angles in gradian form
+    */
+    [[nodiscard]] Eigen::Vector2d gradian() const
+    {
+        return Eigen::Vector2d{static_cast<double>(angles_[0] * 200.f / M_PI),
+                               static_cast<double>(angles_[1] * 200.f / M_PI)};
+    }
+
+private:
+    [[maybe_unused]] Angle_Lat_Long(Eigen::Vector2d angles) : angles_{std::move(angles)} {}
+};
+
+
 
