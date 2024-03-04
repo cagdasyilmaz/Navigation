@@ -63,8 +63,7 @@ Radii Radii_of_curvature(double L)
 }
 
 /**
- * \brief NED_to_ECEF - Converts curvilinear to Cartesian position
- * resolving axes from NED to ECEF and attitude from NED- to ECEF-referenced
+ * \brief NED_to_ECEF - Converts curvilinear to Cartesian position resolving axes from NED to ECEF
  * \param lat_long latitude and longitude in radian forms
  * \param h_b height (m)
  * \retval r_eb_e  = [r_eb_e, y_eb_e, z_eb_e]^T
@@ -86,4 +85,48 @@ Eigen::Vector3d NED_to_ECEF_Position(const Angle_Lat_Long& lat_long, double h_b)
     return Eigen::Vector3d{(radii.R_E + h_b) * cos_lat * cos_long,
                            (radii.R_E + h_b) * cos_lat * sin_long,
                            ((1 - pow(e, 2.0f)) * radii.R_E + h_b) * sin_lat};
+}
+
+
+/**
+ * \brief Rotation matrix from NED to ECEF
+ * \param lat_long latitude and longitude in radian forms
+ * \retval C_n_e Rotation matrix from NED to ECEF
+ */
+Eigen::Matrix3d NED_to_ECEF_Rotation(const Angle_Lat_Long& lat_long)
+{
+    double cos_lat = cos(lat_long.angles_[0]);
+    double sin_lat = sin(lat_long.angles_[0]);
+    double cos_long = cos(lat_long.angles_[1]);
+    double sin_long = sin(lat_long.angles_[1]);
+
+    // Rotation matrix from NED to ECEF
+    Eigen::Matrix3d C_n_e;
+    C_n_e << -sin_lat * cos_long, -sin_long, -cos_lat * cos_long,
+             -sin_lat * sin_long,  cos_long, -cos_lat * sin_long,
+                         cos_lat,         0,            -sin_lat;
+
+    return C_n_e;
+}
+
+/**
+ * \brief NED_to_ECEF - Converts curvilinear to Cartesian velocity resolving axes from NED to ECEF
+ * \param lat_long latitude and longitude in radian forms
+ * \param v_eb_n   velocity of body frame w.r.t. ECEF frame, resolved along north, east, and down (m/s)
+ * \retval v_eb_e  velocity of body frame w.r.t. ECEF frame, resolved along ECEF-frame axes (m/s)
+ */
+Eigen::Vector3d NED_to_ECEF_Velocity(const Angle_Lat_Long& lat_long, const Eigen::Vector3d& v_eb_n)
+{
+    return NED_to_ECEF_Rotation(lat_long) * v_eb_n;
+}
+
+/**
+ * \brief NED_to_ECEF - Converts attitude from NED to ECEF-referenced
+ * \param lat_long latitude and longitude in radian forms
+ * \param C_b_n   velocity of body frame w.r.t. ECEF frame, resolved along north, east, and down (m/s)
+ * \retval body-to-ECEF-frame coordinate transformation matrix
+ */
+Eigen::Matrix3d body_to_ECEF_Rotation(const Angle_Lat_Long& lat_long, const Eigen::Matrix3d& C_b_n)
+{
+    return NED_to_ECEF_Rotation(lat_long) * C_b_n;
 }
